@@ -17,8 +17,8 @@ export class ButtonViewProvider implements vscode.TreeDataProvider<ButtonItem> {
 
   getChildren(): ButtonItem[] {
     return [
-      new ButtonItem("Button 1", "git-better.button1"),
-      new ButtonItem("Button 2", "git-better.button2")
+      new ButtonItem("Create Pull Request", "git-better.button1"),
+      new ButtonItem("View/Edit Pull Request", "git-better.button2")
     ];
   }
 }
