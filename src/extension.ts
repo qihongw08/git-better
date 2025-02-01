@@ -1,6 +1,7 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
+import { GitBetterProvider } from './GitBetterProvider';
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
@@ -17,9 +18,12 @@ export function activate(context: vscode.ExtensionContext) {
 		// The code you place here will be executed every time your command is executed
 		// Display a message box to the user
 		vscode.window.showInformationMessage('Hello World from git-better!');
+
 	});
 
 	context.subscriptions.push(disposable);
+	const gitBetterProvider = new GitBetterProvider();
+	vscode.window.registerTreeDataProvider('view', gitBetterProvider);
 }
 
 // This method is called when your extension is deactivated
