@@ -18,9 +18,8 @@ export function activate(context: vscode.ExtensionContext) {
 	const gitBetterProvider = new GitBetterProvider();
 	vscode.window.registerTreeDataProvider('gitBetter', gitBetterProvider);
 
-	context.subscriptions.push(
-		vscode.commands.registerCommand('git-better.refresh', () => gitBetterProvider.refresh())
-	);
+	
+
 	try {
 		startServer();
 	  } catch (error) {
