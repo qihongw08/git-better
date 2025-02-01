@@ -1,5 +1,7 @@
 import * as vscode from "vscode";
 import { displayInlineComments } from "./views/commentPanel";
+import { startServer } from "./server";
+import { ButtonViewProvider } from "./ButtonViewProvider";
 
 export async function activate(context: vscode.ExtensionContext) {
   const disposable = vscode.commands.registerCommand(
@@ -13,6 +15,34 @@ export async function activate(context: vscode.ExtensionContext) {
       }
     }
   );
+
+	// Register New Button View
+	const buttonViewProvider = new ButtonViewProvider();
+	vscode.window.registerTreeDataProvider('buttonView', buttonViewProvider);
+
+	context.subscriptions.push(
+		vscode.commands.registerCommand('buttonView.refresh', () => buttonViewProvider.refresh())
+	);
+  
+	// Button Commands
+	context.subscriptions.push(
+		vscode.commands.registerCommand('git-better.button1', () => {
+			vscode.window.showInformationMessage('Button 1 Clicked!');
+		})
+	);
+
+	context.subscriptions.push(
+		vscode.commands.registerCommand('git-better.button2', () => {
+			vscode.window.showInformationMessage('Button 2 Clicked!');
+		})
+	);
+
+	// Start Server
+	try {
+		startServer();
+	} catch (error) {
+		console.error("Error starting the server:", error);
+	}
 
   const owner = "your-github-username";
   const repo = "your-repo-name";
