@@ -17,7 +17,26 @@
         "command": "git-better.helloWorld",
         "title": "Hello World"
       }
-    ]
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "pullRequestExplorer",
+          "title": "Pull Request Explorer",
+          "icon": "media/pricon.svg"
+        }
+      ]
+    },
+    "views": {
+      "pullRequestExplorer": [
+        {
+          "id": "gitBetter",
+          "name": "Git Better",
+          "icon": "media/pricon.svg",
+          "contextualTitle": "Pull Request Explorer"
+        }
+      ]
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
