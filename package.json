@@ -9,6 +9,9 @@
   "categories": [
     "Other"
   ],
+  "extensionDependencies": [
+  "vscode.git"
+  ],
   "activationEvents": [],
   "main": "./out/extension.js",
   "contributes": {
@@ -59,6 +62,7 @@
     "typescript": "^5.7.2"
   },
   "dependencies": {
+    "axios": "^1.7.9",
     "express": "^4.21.2"
   }
 }
