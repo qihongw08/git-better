@@ -22,8 +22,13 @@ export function activate(context: vscode.ExtensionContext) {
 	});
 
 	context.subscriptions.push(disposable);
+
 	const gitBetterProvider = new GitBetterProvider();
-	vscode.window.registerTreeDataProvider('view', gitBetterProvider);
+	vscode.window.registerTreeDataProvider('gitBetter', gitBetterProvider);
+
+	context.subscriptions.push(
+		vscode.commands.registerCommand('git-better.refresh', () => gitBetterProvider.refresh())
+	);
 }
 
 // This method is called when your extension is deactivated
