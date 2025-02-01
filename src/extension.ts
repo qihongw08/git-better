@@ -1,31 +1,47 @@
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
-import { GitBetterProvider } from './GitBetterProvider';
+//import { GitBetterProvider } from './GitBetterProvider';
+import { ButtonViewProvider } from './ButtonViewProvider';
 import { startServer } from './server/index';
 
-// This method is called when your extension is activated
-// Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
-
 	console.log('Congratulations, your extension "git-better" is now active!');
-	const disposable = vscode.commands.registerCommand('git-better.helloWorld', () => {
-		vscode.window.showInformationMessage('Hello World from git-better!');
 
-	});
-	context.subscriptions.push(disposable);
+	// // Register GitBetter Tree View
+	// const gitBetterProvider = new GitBetterProvider();
+	// vscode.window.registerTreeDataProvider('gitBetter', gitBetterProvider);
 
-	const gitBetterProvider = new GitBetterProvider();
-	vscode.window.registerTreeDataProvider('gitBetter', gitBetterProvider);
+	// Register New Button View
+	const buttonViewProvider = new ButtonViewProvider();
+	vscode.window.registerTreeDataProvider('buttonView', buttonViewProvider);
 
-	
+	// // Refresh Commands
+	// context.subscriptions.push(
+	// 	vscode.commands.registerCommand('git-better.refresh', () => gitBetterProvider.refresh())
+	// );
 
+	context.subscriptions.push(
+		vscode.commands.registerCommand('buttonView.refresh', () => buttonViewProvider.refresh())
+	);
+  
+	// Button Commands
+	context.subscriptions.push(
+		vscode.commands.registerCommand('git-better.button1', () => {
+			vscode.window.showInformationMessage('Button 1 Clicked!');
+		})
+	);
+
+	context.subscriptions.push(
+		vscode.commands.registerCommand('git-better.button2', () => {
+			vscode.window.showInformationMessage('Button 2 Clicked!');
+		})
+	);
+
+	// Start Server
 	try {
 		startServer();
-	  } catch (error) {
+	} catch (error) {
 		console.error("Error starting the server:", error);
 	}
 }
 
-// This method is called when your extension is deactivated
 export function deactivate() {}
