@@ -22,7 +22,7 @@ export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(
 		vscode.commands.registerCommand('buttonView.refresh', () => buttonViewProvider.refresh())
 	);
-
+  
 	// Button Commands
 	context.subscriptions.push(
 		vscode.commands.registerCommand('git-better.button1', () => {
