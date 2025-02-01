@@ -1,26 +1,48 @@
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
-import * as vscode from 'vscode';
+import * as vscode from "vscode";
+import { displayInlineComments } from "./views/commentPanel";
 
-// This method is called when your extension is activated
-// Your extension is activated the very first time the command is executed
-export function activate(context: vscode.ExtensionContext) {
+export async function activate(context: vscode.ExtensionContext) {
+  const disposable = vscode.commands.registerCommand(
+    "extension.showCommentBox",
+    () => {
+      // Get the active text editor
+      const editor = vscode.window.activeTextEditor;
+      if (!editor) {
+        vscode.window.showErrorMessage("No active text editor found!");
+        return;
+      }
+    }
+  );
 
-	// Use the console to output diagnostic information (console.log) and errors (console.error)
-	// This line of code will only be executed once when your extension is activated
-	console.log('Congratulations, your extension "git-better" is now active!');
+  const owner = "your-github-username";
+  const repo = "your-repo-name";
+  const prNumber = 1; // Replace with your PR number
 
-	// The command has been defined in the package.json file
-	// Now provide the implementation of the command with registerCommand
-	// The commandId parameter must match the command field in package.json
-	const disposable = vscode.commands.registerCommand('git-better.helloWorld', () => {
-		// The code you place here will be executed every time your command is executed
-		// Display a message box to the user
-		vscode.window.showInformationMessage('Hello World from git-better!');
-	});
+  // Fetch PR comments
+  //const comments = await fetchPRComments(owner, repo, prNumber);
 
-	context.subscriptions.push(disposable);
+  // Get the active text editor
+  const editor = vscode.window.activeTextEditor;
+  if (!editor) {
+    vscode.window.showErrorMessage("No active text editor found!");
+    return;
+  }
+
+  const comments = [
+    {
+      body: "what is this code. how can someone code something so trash and so un-usable. which school did you go to so I'll know to never hire again from your school. you should just stop doing computer science. this major ain't for you. go study communications or something since it'll be easy enough for you and stay broke.",
+      path: "random.ts",
+      lineStart: 1,
+      lineEnd: 3,
+    },
+    {
+      body: "this is bad",
+      path: "random.ts",
+      lineStart: 8,
+      lineEnd: 12,
+    },
+  ];
+
+  // Display comments inline
+  displayInlineComments(editor, comments);
 }
-
-// This method is called when your extension is deactivated
-export function deactivate() {}
