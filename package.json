@@ -6,8 +6,12 @@
   "engines": {
     "vscode": "^1.96.0"
   },
+  "type": "commonjs",
   "categories": [
     "Other"
+  ],
+  "extensionDependencies": [
+    "vscode.git"
   ],
   "activationEvents": [
     "onCommand:extension.ShowCommentBox"
@@ -75,6 +79,8 @@
     "typescript": "^5.7.2"
   },
   "dependencies": {
-    "express": "^4.21.2"
+    "axios": "^1.7.9",
+    "express": "^4.21.2",
+    "octokit": "^4.1.0"
   }
 }
