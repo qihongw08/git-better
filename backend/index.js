@@ -1,14 +1,18 @@
 import express from "express";
+import { exec } from 'child_process';
 
 const app = express();
-const port = 3000;
+const port = 3002;
 
 let octokit;
+let owner, repo;
+console.log(10);
 
 app.use(express.json());
 
 // Endpoint to receive the token and perform GitHub API actions
 app.post('/api/get-token', async (req, res) => {
+  console.log(1);
   const { token } = req.body; // The token sent from the VSCode extension
 
   if (!token) {
@@ -16,6 +20,7 @@ app.post('/api/get-token', async (req, res) => {
   }
 
   try {
+    console.log(token);
     // Initialize Octokit with the provided token
     const finalOctokit = new Octokit({
       auth: token, // Use the token to authenticate
@@ -23,6 +28,8 @@ app.post('/api/get-token', async (req, res) => {
 
     // Return octokit
     octokit = finalOctokit;
+    owner = getOwnerRepo()[0]; //gets the owner and repo
+    repo = getOwnerRepo()[1];
   } catch (error) {
     console.error('Error with GitHub API:', error);
     res.status(500).send('Error interacting with GitHub API');
@@ -30,8 +37,8 @@ app.post('/api/get-token', async (req, res) => {
 });
 
 
-const { owner, repo } = getOwnerRepo(); //gets the owner and repo
-
+console.log(owner);
+console.log(repo);
 app.get("/get", async (req, res) => {
   try {
     const response = await octokit.request(
@@ -123,7 +130,6 @@ function getOwnerRepo(req, res) {
     res.json({ owner, repo });
   });
 }
-
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);

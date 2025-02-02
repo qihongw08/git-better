@@ -1,6 +1,7 @@
 import * as vscode from "vscode";
+import { exec } from 'child_process';
+import * as path from "path";
 import { displayInlineComments } from "./views/commentPanel";
-//import { startServer } from "./server";
 import { CreatePullRequestPanel } from "./CreatePullRequest";
 import { EditPullRequestPanel } from "./EditPullRequest";
 import { PullRequestProvider } from "./PullRequestProvider";
@@ -35,6 +36,20 @@ export async function activate(context: vscode.ExtensionContext) {
     console.error('Error getting GitHub token:', error);
   }
 
+
+  const terminalCall = new Promise((resolve, reject) => {
+    console.log(4);
+    const backendPath = path.join(__dirname, "../backend/index.js");
+    exec(`node ${backendPath}`, (error, stdout, stderr) => {
+      if (error) {
+        reject(error);
+        return;
+      }
+      resolve(stdout.trim());
+    });
+  });
+
+  sendAuthTokenToBackend();
 
   const owner = "your-github-username";
   const repo = "your-repo-name";
@@ -72,6 +87,7 @@ export async function activate(context: vscode.ExtensionContext) {
 export const authToken = token;
 
 export async function sendAuthTokenToBackend() {
+  console.log("im here");
   const token = authToken; // The token you got from GitHub authentication
   
   if (!token) {
@@ -80,7 +96,7 @@ export async function sendAuthTokenToBackend() {
   }
 
   const backendUrl = 'http://localhost:3000/api/get-token';
-
+  console.log(2);
   try {
     const response = await fetch(backendUrl, {
       method: 'POST',
