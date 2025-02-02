@@ -6,7 +6,7 @@ const port = 3000;
 
 app.use(express.json());
 
-app.get("/get", async (req, res) => {
+app.get("/get-pr", async (req, res) => {
   try {
     const response = await octokit.request(
       "/repos/qihongw08/git-better/pulls/comments"
@@ -18,7 +18,37 @@ app.get("/get", async (req, res) => {
   }
 });
 
-app.post("/create", async (req, res) => {
+app.get("/get-branches", async (req, res) => {
+  try { 
+    const info = req.body;
+
+    await octokit.request('GET /repos/{owner}/{repo}/branches', {
+      owner: info.owner,
+      repo: info.repo,
+      headers: info.headers
+    });
+  } catch (error) {
+    console.error("Error getting branches:", error);
+    res.status(500).json({ error: "Failed to fetch branches" });
+  }
+});
+
+app.get("/get-collaborators", async (req, res) => {
+  try { 
+    const info = req.body;
+
+    await octokit.request('GET /repos/{owner}/{repo}/collaborators', {
+      owner: info.owner,
+      repo: info.repo,
+      headers: info.headers
+    });
+  } catch (error) {
+    console.error("Error getting collaborators:", error);
+    res.status(500).json({ error: "Failed to fetch collaborators" });
+  }
+});
+
+app.post("/create-pr", async (req, res) => {
   try {
     const info = req.body;
 
@@ -39,7 +69,7 @@ app.post("/create", async (req, res) => {
   }
 });
 
-app.patch("/update", async (req, res) => {
+app.patch("/update-pr", async (req, res) => {
   try {
     const info = {
       ...req.body
