@@ -1,4 +1,4 @@
-import { Octokit } from "@octokit/rest";
+import { Octokit } from "octokit";
 import "dotenv/config";
 
 if (!process.env.GIT_API_KEY) {
