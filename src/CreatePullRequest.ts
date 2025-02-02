@@ -1,4 +1,6 @@
 import * as vscode from "vscode";
+import axios from "axios";
+import { getRepoInfo } from "./extension";
 
 export class CreatePullRequestPanel {
   public static currentPanel: CreatePullRequestPanel | undefined;
@@ -7,7 +9,9 @@ export class CreatePullRequestPanel {
   private _disposables: vscode.Disposable[] = [];
 
   public static createOrShow(extensionUri: vscode.Uri) {
-    const column = vscode.window.activeTextEditor ? vscode.window.activeTextEditor.viewColumn : undefined;
+    const column = vscode.window.activeTextEditor
+      ? vscode.window.activeTextEditor.viewColumn
+      : undefined;
 
     if (CreatePullRequestPanel.currentPanel) {
       CreatePullRequestPanel.currentPanel._panel.reveal(column);
@@ -21,10 +25,13 @@ export class CreatePullRequestPanel {
       {
         enableScripts: true,
         localResourceRoots: [vscode.Uri.joinPath(extensionUri, "media")],
-      },
+      }
     );
 
-    CreatePullRequestPanel.currentPanel = new CreatePullRequestPanel(panel, extensionUri);
+    CreatePullRequestPanel.currentPanel = new CreatePullRequestPanel(
+      panel,
+      extensionUri
+    );
   }
 
   private constructor(panel: vscode.WebviewPanel, extensionUri: vscode.Uri) {
@@ -34,14 +41,39 @@ export class CreatePullRequestPanel {
     this._update();
 
     this._panel.onDidDispose(() => this.dispose(), null, this._disposables);
+
+    // Listen for messages from the webview
+    this._panel.webview.onDidReceiveMessage((message) => {
+      if (message.command === "createPR") {
+        const { title, description, sourceBranch, targetBranch } = message;
+        // Call the function to create PR
+        this.createPullRequest(title, description, sourceBranch, targetBranch);
+      }
+    });
   }
 
-  private _update() {
+  private async _update() {
     const webview = this._panel.webview;
-    this._panel.webview.html = this._getHtmlForWebview(webview);
+    const currentBranch = await this.getCurrentBranch();
+
+    this._panel.webview.html = this._getHtmlForWebview(webview, currentBranch);
   }
 
-  private _getHtmlForWebview(webview: vscode.Webview) {
+  private async getCurrentBranch(): Promise<string> {
+    const gitExtension = vscode.extensions.getExtension("vscode.git");
+    if (!gitExtension) {
+      vscode.window.showErrorMessage("Git extension not found.");
+      return "main"; // Default if no Git extension
+    }
+
+    const git = gitExtension.exports.getAPI(1);
+    const repo = git.repositories[0]; // Assuming single repository
+    const branch = repo.state.HEAD.name; // Active branch
+
+    return branch;
+  }
+
+  private _getHtmlForWebview(webview: vscode.Webview, currentBranch: string) {
     return `
       <!DOCTYPE html>
       <html lang="en">
@@ -60,8 +92,7 @@ export class CreatePullRequestPanel {
         <input type="text" id="prTitle" placeholder="Pull Request Title" required>
         <textarea id="prDescription" placeholder="Pull Request Description (optional)" rows="4"></textarea>
         <select id="sourceBranch">
-          <option value="feature-branch">feature-branch</option>
-          <option value="bugfix-branch">bugfix-branch</option>
+          <option value="${currentBranch}">${currentBranch}</option>
         </select>
         <select id="targetBranch">
           <option value="main">main</option>
@@ -90,6 +121,68 @@ export class CreatePullRequestPanel {
     `;
   }
 
+  private async createPullRequest(
+    title: string,
+    description: string,
+    sourceBranch: string,
+    targetBranch: string
+  ) {
+    // Ensure token is available (fetch from global context or authentication)
+    let token: string | undefined;
+    try {
+      const session = await vscode.authentication.getSession(
+        "github",
+        ["repo", "user"],
+        { createIfNone: true }
+      );
+      token = session.accessToken;
+    } catch (error) {
+      vscode.window.showErrorMessage("Error getting GitHub token.");
+      return;
+    }
+
+    const repoInfo = await getRepoInfo();
+
+    if (!repoInfo) {
+      vscode.window.showErrorMessage("Failed to fetch repository information.");
+      return;
+    }
+
+    const { owner, repoName } = repoInfo;
+
+    if (!token) {
+      vscode.window.showErrorMessage("GitHub token is missing.");
+      return;
+    }
+
+    try {
+      const response = await axios.post(
+        `https://api.github.com/repos/${owner}/${repoName}/pulls`,
+        {
+          title,
+          body: description,
+          head: sourceBranch, // Source branch
+          base: targetBranch, // Target branch (e.g., main)
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      const prUrl = response.data.html_url;
+      vscode.window.showInformationMessage(
+        `Pull Request created successfully! View it here: ${prUrl}`
+      );
+    } catch (error) {
+      console.error("Error creating pull request:", error);
+      vscode.window.showErrorMessage(
+        "Failed to create pull request. Please try again."
+      );
+    }
+  }
+
   public dispose() {
     CreatePullRequestPanel.currentPanel = undefined;
 
@@ -103,4 +196,3 @@ export class CreatePullRequestPanel {
     }
   }
 }
-

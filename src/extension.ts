@@ -4,6 +4,7 @@ import { displayInlineComments } from "./views/commentPanel";
 import { CreatePullRequestPanel } from "./CreatePullRequest";
 import { EditPullRequestPanel } from "./EditPullRequest";
 import { PullRequestProvider } from "./PullRequestProvider";
+import axios from "axios";
 
 let token = "";
 
@@ -99,7 +100,7 @@ export async function activate(context: vscode.ExtensionContext) {
   }
 }
 
-async function getRepoInfo() {
+export async function getRepoInfo() {
   console.log("Getting repository information...");
   await new Promise((resolve) => setTimeout(resolve, 1000));
   const gitExtension = vscode.extensions.getExtension("vscode.git");
@@ -150,12 +151,12 @@ async function fetchPRComments() {
   }
   const { owner, repoName } = repoInfo;
   const url = `https://api.github.com/repos/${owner}/${repoName}/pulls/comments`;
-  const response = await fetch(url, {
+  const response = await axios.get(url, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
   });
-  const data: any = await response.json();
+  const data: any = await response.data;
 
   const comments = data.map((comment: any) => ({
     body: comment.body,
