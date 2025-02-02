@@ -9,9 +9,10 @@ export const decorationType = vscode.window.createTextEditorDecorationType({
 
 export function displayInlineComments(
   editor: vscode.TextEditor,
-  comments: Comment[]
+  comments: any[]
 ) {
   const decorations = comments.map((comment) => {
+    console.log(comment);
     const line = comment.lineStart - 1; // Convert to 0 index
     const range = new vscode.Range(line, 0, comment.lineEnd - 1, 0);
 
