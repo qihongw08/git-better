@@ -9,33 +9,9 @@
   "categories": [
     "Other"
   ],
-  "activationEvents": [
-    "onCommand:extension.ShowCommentBox"
-  ],
+  "activationEvents": ["onCommand:pull-request-manager.createPR", "onCommand:pull-request-manager.editPR"],
   "main": "./out/extension.js",
   "contributes": {
-    "commands": [
-      {
-        "command": "extension.showCommentBox",
-        "title": "Show Comment Box"
-      },
-      {
-        "command": "git-better.openWebview",
-        "title": "Open Git Better Webview"
-      },
-      {
-        "command": "git-better.button1",
-        "title": "Button 1"
-      },
-      {
-        "command": "git-better.button2",
-        "title": "Button 2"
-      },
-      {
-        "command": "buttonView.refresh",
-        "title": "Refresh Button View"
-      }
-    ],
     "viewsContainers": {
       "activitybar": [
         {
@@ -48,12 +24,41 @@
     "views": {
       "pullRequestExplorer": [
         {
-          "id": "buttonView",
-          "name": "Git Better Buttons"
+          "id": "pullRequestList",
+          "name": "Pull Requests"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "pull-request-manager.createPR",
+        "title": "Create Pull Request"
+      },
+      {
+        "command": "pull-request-manager.editPR",
+        "title": "Edit Pull Request"
+      },
+      {
+        "command": "pull-request-manager.refreshPRs",
+        "title": "Refresh Pull Requests",
+        "icon": "$(refresh)"
+      }
+    ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "pull-request-manager.createPR",
+          "when": "view == pullRequestList",
+          "group": "navigation"
+        },
+        {
+          "command": "pull-request-manager.refreshPRs",
+          "when": "view == pullRequestList",
+          "group": "navigation"
         }
       ]
     }
-  },
+},
   "scripts": {
     "vscode:prepublish": "npm run compile",
     "compile": "tsc -p ./",
