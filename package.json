@@ -10,7 +10,10 @@
   "categories": [
     "Other"
   ],
-  "activationEvents": ["onCommand:pull-request-manager.createPR", "onCommand:pull-request-manager.editPR"],
+  "activationEvents": [
+    "onCommand:pull-request-manager.createPR",
+    "onCommand:pull-request-manager.editPR"
+  ],
   "extensionDependencies": [
     "vscode.git"
   ],
@@ -51,6 +54,10 @@
         "command": "pull-request-manager.searchPRs",
         "title": "Search Pull Requests",
         "icon": "$(search)"
+      },
+      {
+        "command": "pull-request-manager.displayComments",
+        "title": "Display Comments"
       }
     ],
     "menus": {
@@ -72,7 +79,7 @@
         }
       ]
     }
-},
+  },
   "scripts": {
     "vscode:prepublish": "npm run compile",
     "compile": "tsc -p ./",
