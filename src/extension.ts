@@ -1,23 +1,24 @@
-import * as vscode from 'vscode';
-//import { GitBetterProvider } from './GitBetterProvider';
-import { ButtonViewProvider } from './ButtonViewProvider';
-import { startServer } from './server/index';
+import * as vscode from "vscode";
+import { displayInlineComments } from "./views/commentPanel";
+import { startServer } from "./server";
+import { ButtonViewProvider } from "./ButtonViewProvider";
 
-export function activate(context: vscode.ExtensionContext) {
-	console.log('Congratulations, your extension "git-better" is now active!');
-
-	// // Register GitBetter Tree View
-	// const gitBetterProvider = new GitBetterProvider();
-	// vscode.window.registerTreeDataProvider('gitBetter', gitBetterProvider);
+export async function activate(context: vscode.ExtensionContext) {
+  const disposable = vscode.commands.registerCommand(
+    "extension.showCommentBox",
+    () => {
+      // Get the active text editor
+      const editor = vscode.window.activeTextEditor;
+      if (!editor) {
+        vscode.window.showErrorMessage("No active text editor found!");
+        return;
+      }
+    }
+  );
 
 	// Register New Button View
 	const buttonViewProvider = new ButtonViewProvider();
 	vscode.window.registerTreeDataProvider('buttonView', buttonViewProvider);
-
-	// // Refresh Commands
-	// context.subscriptions.push(
-	// 	vscode.commands.registerCommand('git-better.refresh', () => gitBetterProvider.refresh())
-	// );
 
 	context.subscriptions.push(
 		vscode.commands.registerCommand('buttonView.refresh', () => buttonViewProvider.refresh())
@@ -42,6 +43,36 @@ export function activate(context: vscode.ExtensionContext) {
 	} catch (error) {
 		console.error("Error starting the server:", error);
 	}
-}
 
-export function deactivate() {}
+  const owner = "your-github-username";
+  const repo = "your-repo-name";
+  const prNumber = 1; // Replace with your PR number
+
+  // Fetch PR comments
+  //const comments = await fetchPRComments(owner, repo, prNumber);
+
+  // Get the active text editor
+  const editor = vscode.window.activeTextEditor;
+  if (!editor) {
+    vscode.window.showErrorMessage("No active text editor found!");
+    return;
+  }
+
+  const comments = [
+    {
+      body: "what is this code. how can someone code something so trash and so un-usable. which school did you go to so I'll know to never hire again from your school. you should just stop doing computer science. this major ain't for you. go study communications or something since it'll be easy enough for you and stay broke.",
+      path: "random.ts",
+      lineStart: 1,
+      lineEnd: 3,
+    },
+    {
+      body: "this is bad",
+      path: "random.ts",
+      lineStart: 8,
+      lineEnd: 12,
+    },
+  ];
+
+  // Display comments inline
+  displayInlineComments(editor, comments);
+}

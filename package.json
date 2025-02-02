@@ -9,13 +9,15 @@
   "categories": [
     "Other"
   ],
-  "activationEvents": [],
+  "activationEvents": [
+    "onCommand:extension.ShowCommentBox"
+  ],
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
       {
-        "command": "git-better.helloWorld",
-        "title": "Hello World"
+        "command": "extension.showCommentBox",
+        "title": "Show Comment Box"
       },
       {
         "command": "git-better.openWebview",
