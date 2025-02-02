@@ -1,12 +1,36 @@
-import { octokit } from "./git-client.js";
 import express from "express";
 
 const app = express();
 const port = 3000;
 
+let octokit;
+
 app.use(express.json());
 
-const { owner, repo } = getOwnerRepo();
+// Endpoint to receive the token and perform GitHub API actions
+app.post('/api/get-token', async (req, res) => {
+  const { token } = req.body; // The token sent from the VSCode extension
+
+  if (!token) {
+    return res.status(400).send('Authorization token is required.');
+  }
+
+  try {
+    // Initialize Octokit with the provided token
+    const finalOctokit = new Octokit({
+      auth: token, // Use the token to authenticate
+    });
+
+    // Return octokit
+    octokit = finalOctokit;
+  } catch (error) {
+    console.error('Error with GitHub API:', error);
+    res.status(500).send('Error interacting with GitHub API');
+  }
+});
+
+
+const { owner, repo } = getOwnerRepo(); //gets the owner and repo
 
 app.get("/get", async (req, res) => {
   try {
@@ -25,8 +49,8 @@ app.post("/create", async (req, res) => {
     const info = req.body;
 
     const response = await octokit.request("POST /repos/{owner}/{repo}/pulls", {
-      owner: info.owner,
-      repo: info.repo,
+      owner: owner,
+      repo: repo,
       title: info.title,
       body: info.body,
       head: info.head,
@@ -48,8 +72,8 @@ app.patch("/update", async (req, res) => {
     };
   
     await octokit.request('PATCH /repos/{owner}/{repo}/pulls/{pull_number}', {
-      owner: info.owner,
-      repo: info.repo,
+      owner: owner,
+      repo: repo,
       pull_number: info.pull_number,
       title: info.title,
       body: info.body,
