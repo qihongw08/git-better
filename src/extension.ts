@@ -1,49 +1,35 @@
 import * as vscode from "vscode";
 import { displayInlineComments } from "./views/commentPanel";
-import { ButtonViewProvider } from "./ButtonViewProvider";
+import { startServer } from "./server";
+import { CreatePullRequestPanel } from "./CreatePullRequest";
+import { EditPullRequestPanel } from "./EditPullRequest";
+import { PullRequestProvider } from "./PullRequestProvider";
 
 export async function activate(context: vscode.ExtensionContext) {
-  const disposable = vscode.commands.registerCommand(
-    "extension.showCommentBox",
-    () => {
-      // Get the active text editor
-      const editor = vscode.window.activeTextEditor;
-      if (!editor) {
-        vscode.window.showErrorMessage("No active text editor found!");
-        return;
-      }
-    }
-  );
+	console.log('Congratulations, your extension "pull-request-manager" is now active!')
 
-  // Register New Button View
-  const buttonViewProvider = new ButtonViewProvider();
-  vscode.window.registerTreeDataProvider("buttonView", buttonViewProvider);
+  const pullRequestProvider = new PullRequestProvider()
+  vscode.window.registerTreeDataProvider("pullRequestList", pullRequestProvider)
 
-  context.subscriptions.push(
-    vscode.commands.registerCommand("buttonView.refresh", () =>
-      buttonViewProvider.refresh()
-    )
-  );
+  const createPRDisposable = vscode.commands.registerCommand("pull-request-manager.createPR", () => {
+    CreatePullRequestPanel.createOrShow(context.extensionUri)
+  })
 
-  // Button Commands
-  context.subscriptions.push(
-    vscode.commands.registerCommand("git-better.button1", () => {
-      vscode.window.showInformationMessage("Button 1 Clicked!");
-    })
-  );
+  const editPRDisposable = vscode.commands.registerCommand("pull-request-manager.editPR", (prId: string) => {
+    EditPullRequestPanel.createOrShow(context.extensionUri, prId)
+  })
 
-  context.subscriptions.push(
-    vscode.commands.registerCommand("git-better.button2", () => {
-      vscode.window.showInformationMessage("Button 2 Clicked!");
-    })
-  );
+  const refreshPRDisposable = vscode.commands.registerCommand("pull-request-manager.refreshPRs", () => {
+    pullRequestProvider.refresh()
+  })
 
-  // Start Server
-  try {
-    //startServer();
-  } catch (error) {
-    console.error("Error starting the server:", error);
-  }
+  context.subscriptions.push(createPRDisposable, editPRDisposable, refreshPRDisposable)
+	// Start Server
+	try {
+		startServer();
+	} catch (error) {
+		console.error("Error starting the server:", error);
+	}
 
   const owner = "your-github-username";
   const repo = "your-repo-name";
