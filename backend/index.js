@@ -8,8 +8,14 @@ app.use(express.json());
 
 app.get("/get-pr", async (req, res) => {
   try {
+    const info = {
+      ...req.body
+    };
+
+    const url = `/repos/${info.owner}/${info.repo}/pulls/comments`;
+
     const response = await octokit.request(
-      "/repos/qihongw08/git-better/pulls/comments"
+      url
     );
     res.status(200).json(response.data);
   } catch (error) {
@@ -20,13 +26,17 @@ app.get("/get-pr", async (req, res) => {
 
 app.get("/get-branches", async (req, res) => {
   try { 
-    const info = req.body;
+    const info = {
+      ...req.body
+    };
 
-    await octokit.request('GET /repos/{owner}/{repo}/branches', {
+    const response = await octokit.request('GET /repos/{owner}/{repo}/branches', {
       owner: info.owner,
       repo: info.repo,
       headers: info.headers
     });
+
+    res.status(201).json(response.data);
   } catch (error) {
     console.error("Error getting branches:", error);
     res.status(500).json({ error: "Failed to fetch branches" });
@@ -35,13 +45,17 @@ app.get("/get-branches", async (req, res) => {
 
 app.get("/get-collaborators", async (req, res) => {
   try { 
-    const info = req.body;
+    const info = {
+      ...req.body
+    };
 
-    await octokit.request('GET /repos/{owner}/{repo}/collaborators', {
+    const response = await octokit.request('GET /repos/{owner}/{repo}/collaborators', {
       owner: info.owner,
       repo: info.repo,
       headers: info.headers
     });
+
+    res.status(201).json(response.data);
   } catch (error) {
     console.error("Error getting collaborators:", error);
     res.status(500).json({ error: "Failed to fetch collaborators" });
@@ -50,7 +64,9 @@ app.get("/get-collaborators", async (req, res) => {
 
 app.post("/create-pr", async (req, res) => {
   try {
-    const info = req.body;
+    const info = {
+      ...req.body
+    };
 
     const response = await octokit.request("POST /repos/{owner}/{repo}/pulls", {
       owner: info.owner,
@@ -75,7 +91,7 @@ app.patch("/update-pr", async (req, res) => {
       ...req.body
     };
   
-    await octokit.request('PATCH /repos/{owner}/{repo}/pulls/{pull_number}', {
+    const response = await octokit.request('PATCH /repos/{owner}/{repo}/pulls/{pull_number}', {
       owner: info.owner,
       repo: info.repo,
       pull_number: info.pull_number,
@@ -85,6 +101,8 @@ app.patch("/update-pr", async (req, res) => {
       base: info.base,
       headers: info.headers
     });
+
+    res.status(201).json(response.data);
   } catch (error) {
     console.error("Error updating pull request:", error);
     res.status(500).json({ error: "Failed to update pull request" });
