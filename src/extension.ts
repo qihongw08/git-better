@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import { displayInlineComments } from "./views/commentPanel";
-import { startServer } from "./server";
+//import { startServer } from "./server";
 import { CreatePullRequestPanel } from "./CreatePullRequest";
 import { EditPullRequestPanel } from "./EditPullRequest";
 import { PullRequestProvider } from "./PullRequestProvider";
@@ -23,13 +23,13 @@ export async function activate(context: vscode.ExtensionContext) {
     pullRequestProvider.refresh()
   })
 
-  context.subscriptions.push(createPRDisposable, editPRDisposable, refreshPRDisposable)
-	// Start Server
-	try {
-		startServer();
-	} catch (error) {
-		console.error("Error starting the server:", error);
-	}
+//   context.subscriptions.push(createPRDisposable, editPRDisposable, refreshPRDisposable)
+// 	// Start Server
+// 	try {
+// 		startServer();
+// 	} catch (error) {
+// 		console.error("Error starting the server:", error);
+// 	}
 
   const owner = "your-github-username";
   const repo = "your-repo-name";
