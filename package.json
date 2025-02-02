@@ -6,10 +6,14 @@
   "engines": {
     "vscode": "^1.96.0"
   },
+  "type": "commonjs",
   "categories": [
     "Other"
   ],
   "activationEvents": ["onCommand:pull-request-manager.createPR", "onCommand:pull-request-manager.editPR"],
+  "extensionDependencies": [
+    "vscode.git"
+  ],
   "main": "./out/extension.js",
   "contributes": {
     "viewsContainers": {
@@ -80,6 +84,8 @@
     "typescript": "^5.7.2"
   },
   "dependencies": {
-    "express": "^4.21.2"
+    "axios": "^1.7.9",
+    "express": "^4.21.2",
+    "octokit": "^4.1.0"
   }
 }
