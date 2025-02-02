@@ -6,10 +6,12 @@ const port = 3000;
 
 app.use(express.json());
 
+const { owner, repo } = getOwnerRepo();
+
 app.get("/get", async (req, res) => {
   try {
     const response = await octokit.request(
-      "/repos/qihongw08/git-better/pulls/comments"
+      "/repos/{owner}/{repo}/pulls/comments"
     );
     res.status(200).json(response.data);
   } catch (error) {
