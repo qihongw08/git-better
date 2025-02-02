@@ -10,7 +10,7 @@ let token = "";
 export async function activate(context: vscode.ExtensionContext) {
 	console.log('Congratulations, your extension "pull-request-manager" is now active!')
 
-  const pullRequestProvider = new PullRequestProvider()
+  const pullRequestProvider = new PullRequestProvider(context)
   vscode.window.registerTreeDataProvider("pullRequestList", pullRequestProvider)
 
   const createPRDisposable = vscode.commands.registerCommand("pull-request-manager.createPR", () => {
@@ -24,6 +24,18 @@ export async function activate(context: vscode.ExtensionContext) {
   const refreshPRDisposable = vscode.commands.registerCommand("pull-request-manager.refreshPRs", () => {
     pullRequestProvider.refresh()
   })
+
+  const searchPRDisposable = vscode.commands.registerCommand("pull-request-manager.searchPRs", async () => {
+    const query = await vscode.window.showInputBox({
+      placeHolder: "Search pull requests...",
+      prompt: "Enter a search query for pull requests",
+    })
+    if (query !== undefined) {
+      pullRequestProvider.setSearchQuery(query)
+    }
+  })
+
+  context.subscriptions.push(createPRDisposable, editPRDisposable, refreshPRDisposable, searchPRDisposable)
 
 
   //get the token

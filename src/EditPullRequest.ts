@@ -47,13 +47,13 @@ export class EditPullRequestPanel {
     const selectedPR = {
       id: prId,
       title: `Pull Request #${prId}`,
-      description: "This is a mock description for the selected pull request.",
-      author: "John Doe",
-      createdAt: "2023-05-01",
+      description: "Added a new feature based on release 10.8. Integrated the new operating system with our goals.",
+      author: "Qihong Wu",
+      createdAt: "2025-02-01",
       history: [
-        { type: "comment", author: "Jane Smith", content: "Looks good to me!", createdAt: "2023-05-02" },
-        { type: "commit", author: "John Doe", content: "Update feature implementation", createdAt: "2023-05-03" },
-        { type: "comment", author: "Bob Johnson", content: "Can you add more tests?", createdAt: "2023-05-04" },
+        { type: "comment", author: "Vivian Zou", content: "Looks good to me!", createdAt: "2025-02-02" },
+        { type: "commit", author: "Qihong Wu", content: "Update bug on line 14", createdAt: "2023-02-03" },
+        { type: "comment", author: "Alan Nguyen", content: "Can you add more tests?", createdAt: "2023-02-04" },
       ],
     }
 

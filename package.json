@@ -46,6 +46,11 @@
         "command": "pull-request-manager.refreshPRs",
         "title": "Refresh Pull Requests",
         "icon": "$(refresh)"
+      },
+      {
+        "command": "pull-request-manager.searchPRs",
+        "title": "Search Pull Requests",
+        "icon": "$(search)"
       }
     ],
     "menus": {
@@ -57,6 +62,11 @@
         },
         {
           "command": "pull-request-manager.refreshPRs",
+          "when": "view == pullRequestList",
+          "group": "navigation"
+        },
+        {
+          "command": "pull-request-manager.searchPRs",
           "when": "view == pullRequestList",
           "group": "navigation"
         }
