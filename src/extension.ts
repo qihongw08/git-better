@@ -1,34 +1,79 @@
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
 import * as vscode from "vscode";
-import { GitBetterProvider } from "./GitBetterProvider";
+import { displayInlineComments } from "./views/commentPanel";
+import { ButtonViewProvider } from "./ButtonViewProvider";
 
-// This method is called when your extension is activated
-// Your extension is activated the very first time the command is executed
-export function activate(context: vscode.ExtensionContext) {
-  console.log('Congratulations, your extension "git-better" is now active!');
+export async function activate(context: vscode.ExtensionContext) {
   const disposable = vscode.commands.registerCommand(
-    "git-better.helloWorld",
+    "extension.showCommentBox",
     () => {
-      vscode.window.showInformationMessage("Hello World from git-better!");
+      // Get the active text editor
+      const editor = vscode.window.activeTextEditor;
+      if (!editor) {
+        vscode.window.showErrorMessage("No active text editor found!");
+        return;
+      }
     }
   );
-  context.subscriptions.push(disposable);
 
-  const gitBetterProvider = new GitBetterProvider();
-  vscode.window.registerTreeDataProvider("gitBetter", gitBetterProvider);
+  // Register New Button View
+  const buttonViewProvider = new ButtonViewProvider();
+  vscode.window.registerTreeDataProvider("buttonView", buttonViewProvider);
 
   context.subscriptions.push(
-    vscode.commands.registerCommand("git-better.refresh", () =>
-      gitBetterProvider.refresh()
+    vscode.commands.registerCommand("buttonView.refresh", () =>
+      buttonViewProvider.refresh()
     )
   );
+
+  // Button Commands
+  context.subscriptions.push(
+    vscode.commands.registerCommand("git-better.button1", () => {
+      vscode.window.showInformationMessage("Button 1 Clicked!");
+    })
+  );
+
+  context.subscriptions.push(
+    vscode.commands.registerCommand("git-better.button2", () => {
+      vscode.window.showInformationMessage("Button 2 Clicked!");
+    })
+  );
+
+  // Start Server
   try {
     //startServer();
   } catch (error) {
     console.error("Error starting the server:", error);
   }
-}
 
-// This method is called when your extension is deactivated
-export function deactivate() {}
+  const owner = "your-github-username";
+  const repo = "your-repo-name";
+  const prNumber = 1; // Replace with your PR number
+
+  // Fetch PR comments
+  //const comments = await fetchPRComments(owner, repo, prNumber);
+
+  // Get the active text editor
+  const editor = vscode.window.activeTextEditor;
+  if (!editor) {
+    vscode.window.showErrorMessage("No active text editor found!");
+    return;
+  }
+
+  const comments = [
+    {
+      body: "what is this code. how can someone code something so trash and so un-usable. which school did you go to so I'll know to never hire again from your school. you should just stop doing computer science. this major ain't for you. go study communications or something since it'll be easy enough for you and stay broke.",
+      path: "random.ts",
+      lineStart: 1,
+      lineEnd: 3,
+    },
+    {
+      body: "this is bad",
+      path: "random.ts",
+      lineStart: 8,
+      lineEnd: 12,
+    },
+  ];
+
+  // Display comments inline
+  displayInlineComments(editor, comments);
+}
