@@ -5,6 +5,8 @@ import { CreatePullRequestPanel } from "./CreatePullRequest";
 import { EditPullRequestPanel } from "./EditPullRequest";
 import { PullRequestProvider } from "./PullRequestProvider";
 
+let token = "";
+
 export async function activate(context: vscode.ExtensionContext) {
 	console.log('Congratulations, your extension "pull-request-manager" is now active!')
 
@@ -23,13 +25,16 @@ export async function activate(context: vscode.ExtensionContext) {
     pullRequestProvider.refresh()
   })
 
-//   context.subscriptions.push(createPRDisposable, editPRDisposable, refreshPRDisposable)
-// 	// Start Server
-// 	try {
-// 		startServer();
-// 	} catch (error) {
-// 		console.error("Error starting the server:", error);
-// 	}
+
+  //get the token
+  try {
+    // Request GitHub authentication
+    const session = await vscode.authentication.getSession('github', ['repo', 'user'], { createIfNone: true });
+    token = session.accessToken;
+  } catch (error) {
+    console.error('Error getting GitHub token:', error);
+  }
+
 
   const owner = "your-github-username";
   const repo = "your-repo-name";
@@ -62,4 +67,39 @@ export async function activate(context: vscode.ExtensionContext) {
 
   // Display comments inline
   displayInlineComments(editor, comments);
+}
+
+export const authToken = token;
+
+export async function sendAuthTokenToBackend() {
+  const token = authToken; // The token you got from GitHub authentication
+  
+  if (!token) {
+    vscode.window.showErrorMessage("No auth token available.");
+    return;
+  }
+
+  const backendUrl = 'http://localhost:3000/api/get-token';
+
+  try {
+    const response = await fetch(backendUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        token: token, // Send the token to your backend
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to send request: ${response.statusText}`);
+    }
+
+    const responseData = await response.json();
+    console.log('Backend response:', responseData);
+  } catch (error) {
+    console.error('Error sending token to backend:', error);
+    vscode.window.showErrorMessage('Failed to send auth token to backend');
+  }
 }
